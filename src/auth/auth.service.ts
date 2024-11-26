@@ -1,23 +1,32 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { JwtService } from '@nestjs/jwt';
-import { UsersService } from 'src/users/users.service';
-
+import { BadRequestException, Injectable } from '@nestjs/common';
+import { SignupDto } from './dtos/signup.dto';
+import { User } from './schemas/user.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import * as bcrypt from "bcrypt"
 @Injectable()
 export class AuthService {
+    constructor (@InjectModel(User.name) private UserModel: Model<User>) {}
 
-    constructor(private usersService: UsersService, private jwtService: JwtService) {}
-    async signIn(username: string, pass: string): Promise<any> {
-        const user = await this.usersService.findOne(username);
-        if (user?.password !== pass) {
-            throw new UnauthorizedException();
+
+    async signup (signupData: SignupDto) {
+        const {email, password, name} =  signupData;
+
+        // Todo: check if email is in use
+        const emailInuse = await this.UserModel.findOne({
+            email: email
+        })
+        if(emailInuse) {
+            throw new BadRequestException("Email is already in use.")
         }
-        const { password, ...result } = user;
-        // TODO: Generate a JWT and return it here
-        // instead of the user object
-        
-        const payload = {sub: user.userId, username: user.username };
-        return {
-            access_token: await this.jwtService.signAsync(payload),
-        };
+        // Todo: hash password
+
+        const hashPasword = await bcrypt.hash(password, 10)
+        // Todo: create user document and save in mongodb
+        await this.UserModel.create({
+            name,
+            email,
+            password: hashPasword
+        })
     }
 }

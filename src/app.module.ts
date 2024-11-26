@@ -1,15 +1,13 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
-import { AuthService } from './auth/auth.service';
-import { AuthGuard } from './auth/auth.guard';
+import { MongooseModule } from '@nestjs/mongoose';
 
 @Module({
-  imports: [ConfigModule.forRoot(), AuthModule, UsersModule],
+  imports: [MongooseModule.forRoot("mongodb+srv://binhcools:HReBHsL3xU4x2G5@cluster0.i7bil.mongodb.net/PostExampleDB?retryWrites=true&w=majority&appName=Cluster0"),
+    AuthModule],
   controllers: [AppController],
-  providers: [AppService, AuthService, AuthGuard],
+  providers: [AppService],
 })
 export class AppModule {}
