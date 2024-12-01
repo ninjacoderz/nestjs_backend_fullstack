@@ -4,5 +4,8 @@ export default () => ({
     },
     jwt: {
         secret: process.env.JWT_SECRET
+    },
+    bcrypt: {
+        hashLength: 10,
     }
 })

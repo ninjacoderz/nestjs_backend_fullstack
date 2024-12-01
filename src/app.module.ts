@@ -15,14 +15,12 @@ import config from './config/config';
       load: [config]
     }), 
     MongooseModule.forRootAsync({
-      imports: [ConfigModule], 
       useFactory: async (config) => ({
         uri: config.get("database.connectionString")
       }),
       inject: [ConfigService]
     }),
     JwtModule.registerAsync({
-      imports: [ConfigModule],
       useFactory: async(config) => ({secret: config.get("jwt.secret")}),
       inject: [ConfigService],
       global: true
